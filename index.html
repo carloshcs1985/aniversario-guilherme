@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aniversário Guilherme Rocha</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aniversário Guilherme Rocha">
+<meta name="theme-color" content="#a3124f">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;
+--bg:light-dark(#fff7f1,#1a0b12);--ink:light-dark(#2a0f1c,#fbe9f0);--muted:light-dark(#7a5060,#c9a5b4);
+--berry:light-dark(#a3124f,#6e0b36);--sun:#ffc21a;--col:light-dark(#ffe4d4,#26111b);--link:light-dark(#a3124f,#ff9cc6);
+--card:light-dark(#ffffff,#341a26);--line:light-dark(#f0cdbb,#4a2737);--ok:light-dark(#0f7a4a,#5fd39b);--focus:light-dark(#1d4ed8,#93c5fd);--new:light-dark(#fff3c4,#4a3a10)}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.top{background:var(--berry);color:#fff;padding:max(env(safe-area-inset-top),20px) max(5vw,16px,env(safe-area-inset-right)) clamp(16px,3vw,28px) max(5vw,16px,env(safe-area-inset-left))}
+.in{max-width:1240px;margin:auto;display:flex;flex-wrap:wrap;gap:14px 40px;align-items:flex-end;justify-content:space-between}
+.kick{margin:0 0 4px;font-weight:600;opacity:.85}
+h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:balance}
+.date{margin-top:10px;background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff;border-radius:999px;padding:8px 16px;min-height:44px;cursor:pointer;font-weight:600}
+.stats{display:flex;flex-wrap:wrap;gap:6px 26px;align-items:flex-end}
+.big{margin:0;display:flex;align-items:baseline;gap:10px}
+.big b{font:700 clamp(44px,7vw,72px)/1 Fraunces,Georgia,serif;color:var(--sun);font-variant-numeric:tabular-nums}
+.stats ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,auto);gap:2px 22px;font-size:15px}
+.stats li b{font-variant-numeric:tabular-nums;margin-right:4px}
+.bar{max-width:1240px;margin:auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px max(5vw,16px) 6px}
+.bar input{flex:1 1 220px;min-height:44px;font-size:16px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px}
+.btn,.bar button{min-height:44px;padding:8px 16px;border-radius:10px;border:1.5px solid var(--berry);background:transparent;color:var(--ink);font-weight:600;cursor:pointer}
+.bar button.on,.btn.pri{background:var(--berry);color:#fff}
+#bLog{position:relative}
+#bLog .badge{display:inline-block;margin-left:6px;background:var(--sun);color:#2a0f1c;border-radius:999px;padding:0 8px;font-size:14px;font-weight:700}
+.note{flex-basis:100%;font-size:14px;color:var(--muted);min-height:1.4em}
+.board{display:flex;gap:14px;align-items:flex-start;overflow-x:auto;padding:10px max(5vw,16px) 120px}
+.col{flex:0 0 290px;background:var(--col);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.col.over{box-shadow:inset 0 0 0 2px var(--berry)}
+.ch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;text-align:left;background:none;border:0;padding:6px 6px 2px;cursor:pointer;border-radius:8px;min-height:44px}
+.cn{font:700 19px/1.2 Fraunces,Georgia,serif}
+.cc{font-size:14px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.bn{margin:0 6px;font-size:14px;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:6px;min-height:52px}
+.g{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;cursor:grab;user-select:none;-webkit-user-select:none}
+.g:hover{border-color:var(--berry)}
+.g.dragging{opacity:.35}
+.g.pk{outline:2.5px solid var(--berry);outline-offset:-1px}
+.g.nv{background:var(--new)}
+.dot{flex:none;width:11px;height:11px;border-radius:50%;border:2px solid var(--muted)}
+.st-s .dot{background:var(--ok);border-color:var(--ok)}
+.st-n .dot{background:var(--muted)}
+.st-n .nm>span{text-decoration:line-through;color:var(--muted)}
+.nm{flex:1;line-height:1.3}
+.nm em{font-style:normal;color:var(--muted);font-size:14px}
+.nm small{display:block;font-size:13px;color:light-dark(#9a3a12,#ffb48a)}
+.no{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ph{height:44px;border:2px dashed var(--berry);border-radius:10px}
+.empty{margin:0;padding:14px 8px;text-align:center;font-size:14px;color:var(--muted);border:1.5px dashed var(--line);border-radius:10px}
+.add{min-height:44px;border:0;background:transparent;color:var(--link);font-weight:700;cursor:pointer;border-radius:10px;text-align:left;padding:6px 8px}
+.loading{color:var(--muted);padding:20px 0}
+.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom));width:min(680px,calc(100% - 24px));background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:5}
+.selbar span{flex:1 1 160px;font-weight:600}
+.selbar select{min-height:44px;border-radius:10px;padding:6px 10px;background:var(--bg);color:var(--ink);border:0;font-size:16px}
+.selbar button{min-height:44px;border-radius:10px;padding:6px 14px;border:0;font-weight:700;cursor:pointer;background:var(--sun);color:#2a0f1c}
+.selbar button.lt{background:transparent;color:var(--bg);border:1.5px solid currentColor}
+.ov{position:fixed;inset:0;background:rgba(20,5,12,.55);display:grid;place-items:center;padding:16px;z-index:10}
+.dlg{background:var(--bg);color:var(--ink);border-radius:16px;padding:20px;width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;display:grid;gap:12px}
+.dlg.wide{width:min(620px,100%)}
+.dlg h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:0}
+.dlg label{display:grid;gap:4px;font-weight:600;font-size:15px}
+.dlg label small{font-weight:400;color:var(--muted)}
+.dlg input,.dlg select,.dlg textarea{min-height:44px;font-size:16px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-weight:400}
+.dlg textarea{min-height:200px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:4px}
+.acts .del{margin-right:auto;border-color:#b42318;color:light-dark(#b42318,#ff8a80)}
+.acts .del.armed{background:#b42318;color:#fff}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.log li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center}
+.log li.nv{background:var(--new)}
+.log li.undone .what{text-decoration:line-through;color:var(--muted)}
+.log .who{font-weight:700}
+.log .when{font-size:13px;color:var(--muted);grid-column:1}
+.log .undo{grid-row:1/span 2;grid-column:2;min-height:44px;padding:6px 12px;border-radius:10px;border:1.5px solid var(--berry);background:transparent;font-weight:700;cursor:pointer}
+.log .tag{grid-column:1;font-size:13px;color:var(--muted)}
+.filt{display:flex;gap:8px;flex-wrap:wrap}
+.filt button{min-height:40px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+.filt button.on{border-color:var(--berry);background:var(--berry);color:#fff}
+.foot{max-width:1240px;margin:-90px auto 0;padding:0 max(5vw,16px) max(40px,env(safe-area-inset-bottom));font-size:13px;color:var(--muted)}
+.foot button{background:none;border:0;color:var(--link);font-weight:700;cursor:pointer;padding:10px 0;min-height:44px}
+.login{min-height:100dvh;display:grid;place-items:center;padding:24px;background:var(--berry);color:#fff}
+.login form{width:min(380px,100%);display:grid;gap:14px;text-align:center}
+.login img{width:120px;height:120px;border-radius:28px;margin:auto;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.login h1{font-size:32px}
+.login input{min-height:52px;font-size:20px;text-align:center;letter-spacing:.08em;border-radius:12px;border:0;padding:8px 12px;text-transform:uppercase;color:#2a0f1c;background:#fff}
+.login button{min-height:52px;border-radius:12px;border:0;background:var(--sun);color:#2a0f1c;font-weight:700;font-size:17px;cursor:pointer}
+.login .err{min-height:1.5em;margin:0;color:#ffe08a;font-weight:600}
+@media (min-width:601px){.list{max-height:calc(100dvh - 300px);overflow-y:auto;padding-right:2px}}
+@media (max-width:600px){.board{flex-direction:column;align-items:stretch;overflow-x:visible}.col{flex:auto}}
+@media (prefers-reduced-motion:no-preference){.g{transition:border-color .15s,transform .15s}.g:active{transform:scale(.98)}}
+</style></head><body>
+<div id="gate" class="login" hidden>
+ <form id="loginF" novalidate>
+  <img src="apple-touch-icon.png" alt="">
+  <h1>Aniversário Guilherme Rocha</h1>
+  <p style="margin:0">Digite o código de acesso que você recebeu.</p>
+  <input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXX-XXXXX" aria-label="Código de acesso">
+  <button type="submit">Entrar</button>
+  <p class="err" id="loginErr" role="alert"></p>
+ </form>
+</div>
+<div id="main" hidden>
+<header class="top"><div class="in">
+ <div class="ttl"><p class="kick" id="hello">Lista de convidados</p><h1 id="t">Aniversário</h1><button id="dt" class="date" type="button">Data da festa</button></div>
+ <div class="stats"><p class="big"><b id="sTot">0</b><span>pessoas na lista</span></p><ul id="sMore"></ul></div>
+</div></header>
+<div class="bar">
+ <input id="q" type="search" placeholder="Buscar convidado" aria-label="Buscar convidado" autocomplete="off">
+ <button id="bLog" type="button">Alterações</button>
+ <button id="bNew" type="button">Novo bloco</button>
+ <button id="bSel" type="button">Selecionar vários</button>
+ <button id="bCopy" type="button">Copiar para planilha</button>
+ <span id="note" class="note" role="status"></span>
+</div>
+<main id="board" class="board"><p class="loading">Carregando a lista…</p></main>
+<p class="foot">Arraste um cartão para outro bloco ou toque nele para editar. No celular, use “Selecionar vários” para mover em grupo. Toda alteração fica registrada em “Alterações”. <button id="bOut" type="button">Sair deste aparelho</button></p>
+<div id="selbar" class="selbar" hidden></div>
+</div>
+<div id="modal"></div>
+<script>
+{
+const API='https://cbgmhibxavuhnbwptwfm.supabase.co/rest/v1/rpc/';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNiZ21oaWJ4YXZ1aG5id3B0d2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0OTY4MjUsImV4cCI6MjExMDA3MjgyNX0.-d8iWlfkbkXxPdpP-DSrV5oozVhuCp0tKPlA1bgq0OA';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const ST={c:'Convidado',s:'Confirmado',n:'Não vai'};
+const board=$('#board'),modal=$('#modal'),selbar=$('#selbar');
+const store={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};
+let KEY=null,S=null,dragId=null,pending=false,writes=0,logFilter='all';
+const ui={q:'',sel:false,picked:new Set()};
+const ppl=g=>1+((g.comp||[]).length);
+const byOrd=(a,b)=>((a.ord??0)-(b.ord??0))||String(a.id).localeCompare(String(b.id));
+const isOwner=()=>S&&S.me&&S.me.role==='owner';
+const newId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function say(t){$('#note').textContent=t||''}
+
+async function rpc(fn,args){
+ const r=await fetch(API+fn,{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+ANON,'Content-Type':'application/json'},body:JSON.stringify(args)});
+ const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(_){}
+ if(!r.ok){const e=new Error((j&&j.message)||('Erro '+r.status));e.code=(j&&j.message)||String(r.status);throw e}
+ return j}
+
+/* ---------- acesso ---------- */
+function showGate(msg){$('#main').hidden=true;$('#gate').hidden=false;$('#loginErr').textContent=msg||'';setTimeout(()=>$('#code').focus(),50)}
+$('#loginF').addEventListener('submit',async e=>{e.preventDefault();const c=$('#code').value.trim().toUpperCase();if(!c)return;
+ $('#loginErr').textContent='Conferindo…';KEY=c;try{await load();store.set('aniv-key',c)}catch(err){KEY=null;$('#loginErr').textContent=err.code==='acesso_negado'?'Código não reconhecido.':'Sem conexão. Tente de novo.'}});
+$('#bOut').addEventListener('click',()=>{store.del('aniv-key');KEY=null;S=null;showGate('')});
+
+async function load(){
+ const st=await rpc('aniv_state',{p_key:KEY});S=st;
+ $('#gate').hidden=true;$('#main').hidden=false;
+ document.body.classList.toggle('owner',isOwner());
+ render()}
+
+/* ---------- desenho ---------- */
+function blockList(){const bs=(S.blocks||[]).slice().sort(byOrd);if(!bs.some(b=>b.id==='sem'))bs.unshift({id:'sem',name:'Sem bloco',note:'',ord:-1});return bs}
+function grouped(){const bs=blockList(),ids=new Set(bs.map(b=>b.id)),by={};bs.forEach(b=>by[b.id]=[]);S.guests.slice().sort(byOrd).forEach(g=>by[ids.has(g.b)?g.b:'sem'].push(g));return{bs,by}}
+function groups(){const m=new Map();for(const l of S.log||[]){if(!m.has(l.grp))m.set(l.grp,[]);m.get(l.grp).push(l)}return[...m.values()]}
+function unseen(){if(!isOwner())return[];const seen=Date.parse(S.meta.owner_seen_at||0)||0;return groups().filter(es=>es[0].who!==S.me.who&&es[0].action!=='desfez'&&Date.parse(es[0].at)>seen&&!es.every(x=>x.undone_at))}
+function card(g,nv){
+ const comp=(g.comp||[]).length?` <em>+ ${esc(g.comp.join(', ').toLowerCase())}</em>`:'';
+ return `<div class="g st-${esc(g.st||'c')}${ui.picked.has(g.id)?' pk':''}${nv.has(g.id)?' nv':''}" draggable="${!ui.sel}" data-id="${esc(g.id)}" data-s="${esc(norm([g.name,...(g.comp||[]),g.note].join(' ')))}" tabindex="0" role="button" aria-label="${esc(g.name)}, ${esc(ST[g.st]||ST.c)}"><i class="dot" title="${esc(ST[g.st]||ST.c)}"></i><span class="nm"><span>${esc(g.name)}</span>${comp}${g.note?`<small>${esc(g.note)}</small>`:''}${nv.has(g.id)?'<small>Alterado pelo Guilherme</small>':''}</span><span class="no">${g.n?esc(g.n):''}</span></div>`}
+function render(){
+ if(!S)return;if(dragId){pending=true;return}
+ const sx=board.scrollLeft,tops={};board.querySelectorAll('.list').forEach(l=>tops[l.dataset.b]=l.scrollTop);
+ const {bs,by}=grouped(),uns=unseen(),nv=new Set();uns.forEach(es=>es.forEach(x=>{if(x.entity==='guest')nv.add(x.entity_id)}));
+ const sum=f=>S.guests.filter(f).reduce((a,g)=>a+ppl(g),0);
+ $('#hello').textContent=`Lista de convidados · ${S.me.who}`;
+ $('#t').textContent=S.meta.title||'Aniversário';
+ $('#dt').textContent=S.meta.date?S.meta.date+' · editar':'Definir data';
+ $('#sTot').textContent=sum(()=>true);
+ $('#sMore').innerHTML=`<li><b>${S.guests.length}</b>convites</li><li><b>${sum(g=>g.st==='s')}</b>confirmadas</li><li><b>${sum(g=>g.st==='n')}</b>não vão</li><li><b>${bs.length}</b>blocos</li>`;
+ $('#bLog').innerHTML='Alterações'+(uns.length?`<span class="badge">${uns.length} nova${uns.length>1?'s':''}</span>`:'');
+ board.innerHTML=bs.map(b=>{const gs=by[b.id],p=gs.reduce((a,g)=>a+ppl(g),0);
+  return `<section class="col" data-b="${esc(b.id)}"><button class="ch" type="button" data-act="block" data-b="${esc(b.id)}"><span class="cn">${esc(b.name)}</span><span class="cc">${p} ${p===1?'pessoa':'pessoas'}</span></button>${b.note?`<p class="bn">${esc(b.note)}</p>`:''}<div class="list" data-b="${esc(b.id)}">${gs.map(g=>card(g,nv)).join('')||'<p class="empty">Nenhum convidado aqui</p>'}</div><button class="add" type="button" data-act="add" data-b="${esc(b.id)}">+ Adicionar convidado</button></section>`}).join('');
+ board.scrollLeft=sx;board.querySelectorAll('.list').forEach(l=>{if(tops[l.dataset.b])l.scrollTop=tops[l.dataset.b]});
+ filter();renderSel()}
+function filter(){const q=norm(ui.q.trim());board.querySelectorAll('.g').forEach(c=>c.hidden=!!q&&!c.dataset.s.includes(q))}
+function renderSel(){
+ if(!ui.sel){selbar.hidden=true;return}
+ const ids=[...ui.picked],p=S.guests.filter(g=>ui.picked.has(g.id)).reduce((a,g)=>a+ppl(g),0);
+ selbar.hidden=false;
+ selbar.innerHTML=`<span>${ids.length} selecionado${ids.length===1?'':'s'} · ${p} pessoa${p===1?'':'s'}</span><select id="selTo" aria-label="Bloco de destino">${blockList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select><button type="button" id="selGo"${ids.length?'':' disabled'}>Mover</button><button type="button" class="lt" id="selX">Concluir</button>`}
+
+/* ---------- gravação (uma por vez) ---------- */
+let chain=Promise.resolve();
+function apply(op,args){writes++;say('Salvando…');
+ chain=chain.then(()=>rpc('aniv_apply',{p_key:KEY,p_op:op,p_args:args})).catch(err=>{
+  if(err.code==='acesso_negado'){showGate('Seu código não vale mais. Peça um novo ao Carlos.');return}
+  say('Não foi possível salvar uma alteração ('+err.message+'). A lista foi recarregada.')}).finally(async()=>{
+  writes--;if(writes===0){try{await load();if(/Salvando/.test($('#note').textContent))say('Salvo.')}catch(_){}}});
+ return chain}
+
+function moveTo(ids,bid,beforeId){
+ const {by}=grouped(),list=(by[bid]||[]).filter(g=>!ids.includes(g.id)),n=ids.length;let ords;
+ if(beforeId){const i=list.findIndex(g=>g.id===beforeId),nx=list[i],pv=list[i-1];ords=ids.map((_,k)=>pv?pv.ord+(nx.ord-pv.ord)*(k+1)/(n+1):nx.ord-1000*(n-k))}
+ else{const last=list[list.length-1],base=last?last.ord:0;ords=ids.map((_,k)=>base+1000*(k+1))}
+ const moves=[];ids.forEach((id,k)=>{const g=S.guests.find(x=>x.id===id);if(!g)return;g.b=bid;g.ord=ords[k];moves.push({id,b:bid,ord:ords[k]})});
+ if(moves.length)apply('guests_move',{moves});render()}
+
+/* ---------- diálogos ---------- */
+function open(html,bind,wide){modal.innerHTML=`<div class="ov"><form class="dlg${wide?' wide':''}" novalidate>${html}</form></div>`;const f=modal.querySelector('form');
+ modal.querySelector('.ov').addEventListener('click',e=>{if(e.target.classList.contains('ov'))close()});
+ f.addEventListener('submit',e=>e.preventDefault());f.querySelectorAll('[data-x]').forEach(b=>b.addEventListener('click',close));bind(f);
+ const first=f.querySelector('input,select,textarea');if(first&&!wide)first.focus()}
+function close(){modal.innerHTML='';if(pending){pending=false;render()}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.innerHTML)close()});
+const blockOpts=sel=>blockList().map(b=>`<option value="${esc(b.id)}"${b.id===sel?' selected':''}>${esc(b.name)}</option>`).join('');
+function armDel(btn,fn){btn.addEventListener('click',()=>{if(btn.classList.contains('armed')){fn();close()}else{btn.classList.add('armed');btn.textContent='Confirmar exclusão'}})}
+
+function openGuest(id,bid){
+ const g=id?S.guests.find(x=>x.id===id):{name:'',comp:[],b:bid||'sem',st:'c',note:''};if(!g)return;
+ const hist=id?(S.log||[]).filter(l=>l.entity==='guest'&&l.entity_id===id).slice(0,3):[];
+ open(`<h2>${id?'Editar convidado':'Novo convidado'}</h2>
+ <label>Nome<input name="nm" value="${esc(g.name)}" required></label>
+ <label>Acompanhantes <small>separe por vírgula, ex.: Esposa, Filho</small><input name="cp" value="${esc((g.comp||[]).join(', '))}"></label>
+ <label>Bloco<select name="bl">${blockOpts(g.b)}</select></label>
+ <label>Situação<select name="stt">${Object.entries(ST).map(([k,v])=>`<option value="${k}"${(g.st||'c')===k?' selected':''}>${v}</option>`).join('')}</select></label>
+ <label>Observação<input name="nt" value="${esc(g.note||'')}"></label>
+ ${g.n?`<p class="bn" style="margin:0">Número na lista original: ${esc(g.n)}</p>`:''}
+ ${hist.length?`<p class="bn" style="margin:0">Última alteração: ${esc(hist[0].who)}, ${esc(when(hist[0].at))}</p>`:''}
+ <div class="acts">${id?'<button type="button" class="btn del">Excluir</button>':''}<button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
+  const E=f.elements,del=f.querySelector('.del');
+  if(del)armDel(del,()=>{S.guests=S.guests.filter(x=>x.id!==id);ui.picked.delete(id);apply('guest_delete',{id});render()});
+  f.addEventListener('submit',()=>{const name=E.nm.value.trim();if(!name){E.nm.focus();return}
+   const data={name,comp:E.cp.value.split(',').map(s=>s.trim()).filter(Boolean),st:E.stt.value,note:E.nt.value.trim(),b:E.bl.value};close();
+   const gid=id||newId('g');
+   if(id){if(data.b!==g.b){const {by}=grouped(),l=by[data.b]||[];g.ord=(l.length?l[l.length-1].ord:0)+1000}Object.assign(g,data)}
+   else{const {by}=grouped(),l=by[data.b]||[];S.guests.push({id:gid,n:'',ord:(l.length?l[l.length-1].ord:0)+1000,...data})}
+   apply('guest_save',{id:gid,...data});render()})})}
+
+function openBlock(bid){
+ const bs=blockList(),i=bs.findIndex(b=>b.id===bid),b=bid?bs[i]:{name:'',note:''};
+ open(`<h2>${bid?'Editar bloco':'Novo bloco'}</h2>
+ <label>Nome do bloco<input name="nm" value="${esc(b.name)}" required placeholder="Ex.: Família, Amigos do trabalho"></label>
+ <label>Nota <small>opcional</small><input name="nt" value="${esc(b.note||'')}"></label>
+ ${bid?`<div class="acts" style="justify-content:flex-start"><button type="button" class="btn" id="mL"${i>0?'':' disabled'}>Mover para a esquerda</button><button type="button" class="btn" id="mR"${i<bs.length-1?'':' disabled'}>Mover para a direita</button></div>`:''}
+ <div class="acts">${bid&&bid!=='sem'?'<button type="button" class="btn del">Excluir bloco</button>':''}<button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
+  const E=f.elements,del=f.querySelector('.del');
+  if(del)armDel(del,()=>{S.guests.forEach(g=>{if(g.b===bid)g.b='sem'});S.blocks=S.blocks.filter(x=>x.id!==bid);apply('block_delete',{id:bid});render()});
+  const swap=j=>{const a=bs[i],c=bs[j];let oa=a.ord??i,oc=c.ord??j;if(oa===oc)oc+=j>i?1:-1;
+   apply('blocks_order',{orders:[{id:a.id,ord:oc},{id:c.id,ord:oa}]});a.ord=oc;c.ord=oa;close();render()};
+  const mL=f.querySelector('#mL'),mR=f.querySelector('#mR');if(mL)mL.addEventListener('click',()=>swap(i-1));if(mR)mR.addEventListener('click',()=>swap(i+1));
+  f.addEventListener('submit',()=>{const name=E.nm.value.trim();if(!name){E.nm.focus();return}const note=E.nt.value.trim();close();
+   if(bid){Object.assign(b,{name,note});apply('block_save',{id:bid,name,note})}
+   else{const id=newId('b'),ord=Math.max(0,...S.blocks.map(x=>x.ord??0))+1;S.blocks.push({id,name,note,ord});apply('block_save',{id,name,note,ord})}
+   render()})})}
+
+function openMeta(){
+ open(`<h2>Dados da festa</h2><label>Título<input name="ttl" value="${esc(S.meta.title||'')}"></label><label>Data<input name="dte" value="${esc(S.meta.date||'')}" placeholder="dd/mm/aaaa"></label><div class="acts"><button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
+  f.addEventListener('submit',()=>{const title=f.elements.ttl.value.trim()||'Aniversário',date=f.elements.dte.value.trim();S.meta.title=title;S.meta.date=date;close();apply('meta_save',{title,date});render()})})}
+
+/* ---------- histórico ---------- */
+const fmt=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+function when(at){try{return fmt.format(new Date(at))}catch(_){return at}}
+function bname(id,es){if(id==='sem')return'Sem bloco';const b=(S.blocks||[]).find(x=>x.id===id);if(b)return b.name;
+ for(const l of S.log||[])if(l.entity==='block'&&l.entity_id===id)return(l.before||l.after||{}).name||'bloco removido';return'bloco removido'}
+function names(es){const ns=es.slice().reverse().filter(x=>x.entity==='guest').map(x=>(x.after||x.before||{}).name).filter(Boolean);const u=[...new Set(ns)];return u.length>4?u.slice(0,4).join(', ')+` e mais ${u.length-4}`:u.join(', ')}
+function describe(es){
+ const e=es[0],a=e.action;
+ if(a==='desfez')return'desfez uma alteração'+(names(es)?' em '+names(es):'');
+ const bd=es.find(x=>x.entity==='block'&&x.action==='excluiu');
+ if(bd){const n=es.filter(x=>x.entity==='guest').length;return`excluiu o bloco “${bd.before.name}”`+(n?` (${n} convite${n>1?'s':''} voltou${n>1?'ram':''} para Sem bloco)`:'')}
+ if(e.entity==='meta')return`alterou os dados da festa para “${e.after.title}”${e.after.date?' · '+e.after.date:''}`;
+ if(e.entity==='block'){
+  if(a==='criou')return`criou o bloco “${e.after.name}”`;
+  if(a==='reordenou')return'mudou a ordem dos blocos';
+  if(e.before.name!==e.after.name)return`renomeou o bloco “${e.before.name}” para “${e.after.name}”`;
+  return`alterou a nota do bloco “${e.after.name}”`}
+ if(a==='adicionou')return`adicionou ${names(es)}`+(es.length===1&&e.after.comp.length?` + ${e.after.comp.join(', ').toLowerCase()}`:'')+` em ${bname(e.after.b)}`;
+ if(a==='excluiu')return`excluiu ${names(es)}`;
+ if(a==='moveu'){if(es.every(x=>x.before.b===x.after.b))return`reordenou ${names(es)}`;return`moveu ${names(es)} para ${bname(e.after.b)}`}
+ if(a==='editou'){const b=e.before,f=e.after,p=[];
+  if(b.name!==f.name)p.push(`renomeou “${b.name}” para “${f.name}”`);
+  if(b.st!==f.st)p.push(`marcou ${f.name} como ${ST[f.st]}`);
+  if(JSON.stringify(b.comp)!==JSON.stringify(f.comp))p.push(`mudou os acompanhantes de ${f.name} para ${f.comp.length?f.comp.join(', ').toLowerCase():'nenhum'}`);
+  if(b.b!==f.b)p.push(`moveu ${f.name} para ${bname(f.b)}`);
+  if(b.note!==f.note)p.push(`mudou a observação de ${f.name}`+(f.note?`: “${f.note}”`:''));
+  return p.join('; ')||`editou ${f.name}`}
+ return a}
+function openLog(){
+ const uns=new Set(unseen().map(es=>es[0].grp));
+ const draw=f=>{const gs=groups().filter(es=>logFilter==='all'||(logFilter==='other'?es[0].who!==S.me.who:uns.has(es[0].grp)));
+  f.querySelector('.log').innerHTML=gs.length?gs.map(es=>{const e=es[0],done=es.every(x=>x.undone_at)&&e.action!=='desfez';
+   const canUndo=isOwner()&&e.action!=='desfez'&&!done;
+   return `<li class="${uns.has(e.grp)?'nv':''}${done?' undone':''}"><span class="what"><span class="who">${esc(e.who)}</span> ${esc(describe(es))}</span><span class="when">${esc(when(e.at))}</span>${done?`<span class="tag">Desfeito por ${esc(es[0].undone_by||'Carlos')}</span>`:''}${canUndo?`<button type="button" class="undo" data-g="${esc(e.grp)}">Desfazer</button>`:''}</li>`}).join(''):'<li><span class="what">Nenhuma alteração por aqui.</span></li>'};
+ const other=S.me.role==='owner'?'Só do Guilherme':'Só do Carlos';
+ open(`<h2>Alterações</h2><div class="filt"><button type="button" data-f="all">Todas</button><button type="button" data-f="other">${other}</button>${isOwner()?'<button type="button" data-f="new">Novas</button>':''}</div><ul class="log"></ul><div class="acts"><button type="button" class="btn pri" data-x>Fechar</button></div>`,f=>{
+  const mark=()=>f.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('on',b.dataset.f===logFilter));
+  if(logFilter==='new'&&!isOwner())logFilter='all';mark();draw(f);
+  f.querySelector('.filt').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;logFilter=b.dataset.f;mark();draw(f)});
+  f.querySelector('.log').addEventListener('click',async e=>{const b=e.target.closest('.undo');if(!b)return;
+   if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='Confirmar';return}
+   b.disabled=true;b.textContent='Desfazendo…';
+   try{await chain;await rpc('aniv_undo',{p_key:KEY,p_grp:b.dataset.g});await load();say('Alteração desfeita.');draw(f)}catch(err){b.textContent='Falhou';say('Não foi possível desfazer: '+err.message)}})},true);
+ if(isOwner()&&uns.size){rpc('aniv_seen',{p_key:KEY}).then(()=>{S.meta.owner_seen_at=new Date().toISOString();render()}).catch(()=>{})}}
+
+function tsv(){const {bs,by}=grouped();const rows=[['Bloco','Nº original','Convidado','Acompanhantes','Pessoas','Situação','Observação']];
+ bs.forEach(b=>by[b.id].forEach(g=>rows.push([b.name,g.n||'',g.name,(g.comp||[]).join(', '),ppl(g),ST[g.st]||ST.c,g.note||''])));
+ return rows.map(r=>r.map(v=>String(v).replace(/[\t\n]/g,' ')).join('\t')).join('\n')}
+
+/* ---------- eventos ---------- */
+board.addEventListener('click',e=>{const a=e.target.closest('[data-act]');
+ if(a){if(a.dataset.act==='block')openBlock(a.dataset.b);else if(a.dataset.act==='add')openGuest(null,a.dataset.b);return}
+ const c=e.target.closest('.g');if(!c)return;
+ if(ui.sel){const id=c.dataset.id;ui.picked.has(id)?ui.picked.delete(id):ui.picked.add(id);c.classList.toggle('pk');renderSel()}else openGuest(c.dataset.id)});
+board.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('g')){e.preventDefault();e.target.click()}});
+$('#q').addEventListener('input',e=>{ui.q=e.target.value;filter()});
+$('#bNew').addEventListener('click',()=>openBlock(null));
+$('#bLog').addEventListener('click',()=>{if(!modal.innerHTML)openLog()});
+$('#dt').addEventListener('click',openMeta);
+$('#bSel').addEventListener('click',()=>{ui.sel=!ui.sel;ui.picked.clear();$('#bSel').classList.toggle('on',ui.sel);$('#bSel').textContent=ui.sel?'Sair da seleção':'Selecionar vários';render()});
+selbar.addEventListener('click',e=>{if(e.target.id==='selGo'){moveTo([...ui.picked].filter(id=>S.guests.some(g=>g.id===id)),$('#selTo').value,null);ui.picked.clear();render()}
+ else if(e.target.id==='selX')$('#bSel').click()});
+$('#bCopy').addEventListener('click',async()=>{const t=tsv();try{await navigator.clipboard.writeText(t);say('Lista copiada. Cole no Excel ou Google Planilhas.')}catch(_){
+ open(`<h2>Copiar para planilha</h2><p style="margin:0">Selecione tudo abaixo e copie; depois cole no Excel ou Google Planilhas.</p><textarea readonly>${esc(t)}</textarea><div class="acts"><button type="button" class="btn pri" data-x>Fechar</button></div>`,f=>{const ta=f.querySelector('textarea');ta.focus();ta.select()})}});
+
+let ph=null,overCol=null;
+const clearMark=()=>{if(ph)ph.remove();ph=null;if(overCol)overCol.classList.remove('over');overCol=null};
+const afterEl=(list,y)=>{for(const el of list.querySelectorAll('.g:not(.dragging):not([hidden])')){const r=el.getBoundingClientRect();if(y<r.top+r.height/2)return el}return null};
+board.addEventListener('dragstart',e=>{const c=e.target.closest('.g');if(!c||ui.sel)return;dragId=c.dataset.id;c.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',dragId)}catch(_){}});
+board.addEventListener('dragover',e=>{const col=e.target.closest('.col');if(!col||!dragId)return;e.preventDefault();
+ if(overCol!==col){if(overCol)overCol.classList.remove('over');overCol=col;col.classList.add('over')}
+ const list=col.querySelector('.list'),aft=afterEl(list,e.clientY);if(!ph){ph=document.createElement('div');ph.className='ph'}
+ const em=list.querySelector('.empty');if(em)em.remove();aft?list.insertBefore(ph,aft):list.appendChild(ph)});
+board.addEventListener('drop',e=>{const col=e.target.closest('.col');if(!col||!dragId)return;e.preventDefault();
+ const nx=ph&&ph.nextElementSibling&&ph.nextElementSibling.classList.contains('g')?ph.nextElementSibling.dataset.id:null,id=dragId;dragId=null;clearMark();moveTo([id],col.dataset.b,nx)});
+board.addEventListener('dragend',()=>{board.querySelectorAll('.dragging').forEach(x=>x.classList.remove('dragging'));clearMark();if(dragId||pending){dragId=null;pending=false;render()}});
+
+/* ---------- sincronização ---------- */
+async function poll(){if(!KEY||!S||document.hidden||writes||dragId)return;
+ try{const rv=await rpc('aniv_rev',{p_key:KEY});if(rv!==S.rev){await load();if(!modal.innerHTML)say('Lista atualizada.')}}catch(err){if(err.code==='acesso_negado')showGate('Seu código não vale mais.')}}
+setInterval(poll,8000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+
+/* ---------- início ---------- */
+(async()=>{
+ const p=new URLSearchParams(location.search);const k=(p.get('k')||'').trim().toUpperCase();
+ KEY=k||store.get('aniv-key');
+ if(!KEY){showGate('');return}
+ try{await load();store.set('aniv-key',KEY)}catch(err){if(err.code==='acesso_negado'){store.del('aniv-key');KEY=null;showGate('Código não reconhecido.')}else{$('#main').hidden=false;board.innerHTML='<p class="loading">Sem conexão com a lista. Verifique a internet; a página tenta de novo sozinha.</p>';const t=setInterval(async()=>{try{await load();clearInterval(t)}catch(_){}},8000)}}
+})();
+}
+</script>
+</body></html>
