@@ -19,7 +19,7 @@
 --bg:light-dark(#fff7f1,#1a0b12);--ink:light-dark(#2a0f1c,#fbe9f0);--muted:light-dark(#7a5060,#c9a5b4);
 --berry:light-dark(#a3124f,#6e0b36);--sun:#ffc21a;--col:light-dark(#ffe4d4,#26111b);--link:light-dark(#a3124f,#ff9cc6);
 --card:light-dark(#ffffff,#341a26);--line:light-dark(#f0cdbb,#4a2737);--ok:light-dark(#0f7a4a,#5fd39b);--focus:light-dark(#1d4ed8,#93c5fd);--new:light-dark(#fff3c4,#4a3a10)}
-[hidden]{display:none!important}
+[hidden],.login[hidden],.selbar[hidden]{display:none!important}
 *{box-sizing:border-box;min-width:0}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
@@ -107,7 +107,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:
 @media (max-width:600px){.board{flex-direction:column;align-items:stretch;overflow-x:visible}.col{flex:auto}}
 @media (prefers-reduced-motion:no-preference){.g{transition:border-color .15s,transform .15s}.g:active{transform:scale(.98)}}
 </style></head><body>
-<div id="gate" class="login" hidden>
+<div id="gate" class="login" hidden style="display:none">
  <form id="loginF" novalidate>
   <img src="apple-touch-icon.png" alt="">
   <h1>Aniversário Guilherme Rocha</h1>
@@ -117,7 +117,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:
   <p class="err" id="loginErr" role="alert"></p>
  </form>
 </div>
-<div id="main" hidden>
+<div id="main" hidden style="display:none">
 <header class="top"><div class="in">
  <div class="ttl"><p class="kick" id="hello">Lista de convidados</p><h1 id="t">Aniversário</h1><button id="dt" class="date" type="button">Data da festa</button></div>
  <div class="stats"><p class="big"><b id="sTot">0</b><span>pessoas na lista</span></p><ul id="sMore"></ul></div>
@@ -132,7 +132,7 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:
 </div>
 <main id="board" class="board"><p class="loading">Carregando a lista…</p></main>
 <p class="foot">Arraste um cartão para outro bloco ou toque nele para editar. No celular, use “Selecionar vários” para mover em grupo. Toda alteração fica registrada em “Alterações”. <button id="bOut" type="button">Sair deste aparelho</button></p>
-<div id="selbar" class="selbar" hidden></div>
+<div id="selbar" class="selbar" hidden style="display:none"></div>
 </div>
 <div id="modal"></div>
 <script>
@@ -151,6 +151,7 @@ const ppl=g=>1+((g.comp||[]).length);
 const byOrd=(a,b)=>((a.ord??0)-(b.ord??0))||String(a.id).localeCompare(String(b.id));
 const isOwner=()=>S&&S.me&&S.me.role==='owner';
 const newId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function vis(el,on){el.hidden=!on;el.style.display=on?'':'none'}
 function say(t){$('#note').textContent=t||''}
 
 async function rpc(fn,args){
@@ -160,14 +161,14 @@ async function rpc(fn,args){
  return j}
 
 /* ---------- acesso ---------- */
-function showGate(msg){$('#main').hidden=true;$('#gate').hidden=false;$('#loginErr').textContent=msg||'';setTimeout(()=>$('#code').focus(),50)}
+function showGate(msg){vis($('#main'),false);vis($('#gate'),true);$('#loginErr').textContent=msg||'';setTimeout(()=>$('#code').focus(),50)}
 $('#loginF').addEventListener('submit',async e=>{e.preventDefault();const c=$('#code').value.trim().toUpperCase();if(!c)return;
  $('#loginErr').textContent='Conferindo…';KEY=c;try{await load();store.set('aniv-key',c)}catch(err){KEY=null;$('#loginErr').textContent=err.code==='acesso_negado'?'Código não reconhecido.':'Sem conexão. Tente de novo.'}});
 $('#bOut').addEventListener('click',()=>{store.del('aniv-key');KEY=null;S=null;showGate('')});
 
 async function load(){
  const st=await rpc('aniv_state',{p_key:KEY});S=st;
- $('#gate').hidden=true;$('#main').hidden=false;
+ vis($('#gate'),false);vis($('#main'),true);
  document.body.classList.toggle('owner',isOwner());
  render()}
 
@@ -196,9 +197,9 @@ function render(){
  filter();renderSel()}
 function filter(){const q=norm(ui.q.trim());board.querySelectorAll('.g').forEach(c=>c.hidden=!!q&&!c.dataset.s.includes(q))}
 function renderSel(){
- if(!ui.sel){selbar.hidden=true;return}
+ if(!ui.sel){vis(selbar,false);return}
  const ids=[...ui.picked],p=S.guests.filter(g=>ui.picked.has(g.id)).reduce((a,g)=>a+ppl(g),0);
- selbar.hidden=false;
+ vis(selbar,true);
  selbar.innerHTML=`<span>${ids.length} selecionado${ids.length===1?'':'s'} · ${p} pessoa${p===1?'':'s'}</span><select id="selTo" aria-label="Bloco de destino">${blockList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select><button type="button" id="selGo"${ids.length?'':' disabled'}>Mover</button><button type="button" class="lt" id="selX">Concluir</button>`}
 
 /* ---------- gravação (uma por vez) ---------- */
@@ -357,7 +358,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
  const p=new URLSearchParams(location.search);const k=(p.get('k')||'').trim().toUpperCase();
  KEY=k||store.get('aniv-key');
  if(!KEY){showGate('');return}
- try{await load();store.set('aniv-key',KEY)}catch(err){if(err.code==='acesso_negado'){store.del('aniv-key');KEY=null;showGate('Código não reconhecido.')}else{$('#main').hidden=false;board.innerHTML='<p class="loading">Sem conexão com a lista. Verifique a internet; a página tenta de novo sozinha.</p>';const t=setInterval(async()=>{try{await load();clearInterval(t)}catch(_){}},8000)}}
+ try{await load();store.set('aniv-key',KEY)}catch(err){if(err.code==='acesso_negado'){store.del('aniv-key');KEY=null;showGate('Código não reconhecido.')}else{vis($('#main'),true);board.innerHTML='<p class="loading">Sem conexão com a lista. Verifique a internet; a página tenta de novo sozinha.</p>';const t=setInterval(async()=>{try{await load();clearInterval(t)}catch(_){}},8000)}}
 })();
 }
 </script>
