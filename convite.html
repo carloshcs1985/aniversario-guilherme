@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Convite · Aniversário Guilherme Rocha</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#a3124f">
+<meta property="og:title" content="Convite · Aniversário Guilherme Rocha">
+<meta property="og:description" content="Seu convite pessoal. Toque para ver e confirmar presença.">
+<meta property="og:image" content="https://carloshcs1985.github.io/aniversario-guilherme/icon-512.png">
+<meta property="og:type" content="website">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--berry:#a3124f;--deep:#6e0b36;--sun:#ffc21a;--paper:#fff7f1;--ink:#2a0f1c;--muted:#7a5060;--line:#f0cdbb;--ok:#0f7a4a}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;min-height:100dvh;background:var(--berry);color:var(--ink);font:17px/1.55 Figtree,system-ui,sans-serif;display:grid;place-items:center;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
+.card{width:min(460px,100%);background:var(--paper);border-radius:24px;box-shadow:0 24px 60px rgba(30,0,12,.35);overflow:hidden}
+.top{background:var(--deep);color:#fff;text-align:center;padding:28px 24px 22px;position:relative}
+.top img{width:132px;height:132px;border-radius:30px;display:block;margin:0 auto 14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.top p{margin:0;font-weight:600;opacity:.9}
+h1{font:700 clamp(30px,8vw,40px)/1.05 Fraunces,Georgia,serif;margin:6px 0 0;text-wrap:balance}
+.body{padding:24px;display:grid;gap:16px}
+.hi{font:700 24px/1.2 Fraunces,Georgia,serif;margin:0;color:var(--berry)}
+.lead{margin:0;font-size:18px}
+.facts{margin:0;padding:0;list-style:none;display:grid;gap:10px;border-top:1.5px solid var(--line);border-bottom:1.5px solid var(--line);padding:14px 0}
+.facts li{display:grid;grid-template-columns:5.5em 1fr;gap:10px}
+.facts b{color:var(--muted);font-weight:600}
+.facts a{color:var(--berry);font-weight:700}
+.btns{display:grid;gap:10px}
+.btns button{min-height:54px;border-radius:14px;border:2px solid var(--berry);background:#fff;color:var(--berry);font:700 17px Figtree,system-ui,sans-serif;cursor:pointer}
+.btns button.yes{background:var(--berry);color:#fff}
+.btns button:disabled{opacity:.6}
+.done{margin:0;padding:14px 16px;border-radius:14px;background:#e8f6ee;color:var(--ok);font-weight:700}
+.done.no{background:#f4ecef;color:var(--muted)}
+.chg{background:none;border:0;color:var(--berry);font-weight:700;cursor:pointer;padding:10px 0;font-size:16px;justify-self:start}
+.small{margin:0;font-size:14px;color:var(--muted)}
+.msg{text-align:center;color:#fff;font-size:18px}
+:focus-visible{outline:3px solid #1d4ed8;outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.card{animation:up .5s ease-out}@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}}
+</style></head><body>
+<p class="msg" id="load">Abrindo seu convite…</p>
+<main class="card" id="card" hidden>
+ <header class="top"><img src="icon-512.png" alt="Guilherme Rocha"><p>Seu convite para o</p><h1 id="ttl">Aniversário Guilherme Rocha</h1></header>
+ <section class="body">
+  <p class="hi" id="hi"></p>
+  <p class="lead" id="lead"></p>
+  <ul class="facts" id="facts"></ul>
+  <div id="ask"><p class="small" style="margin-bottom:10px">Pode confirmar por aqui?</p><div class="btns" id="btns"></div></div>
+  <p class="done" id="done" hidden></p>
+  <button class="chg" id="chg" type="button" hidden>Mudar minha resposta</button>
+  <p class="small" id="err" role="alert"></p>
+ </section>
+</main>
+<script>
+{
+const API='https://cbgmhibxavuhnbwptwfm.supabase.co/rest/v1/rpc/';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNiZ21oaWJ4YXZ1aG5id3B0d2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0OTY4MjUsImV4cCI6MjExMDA3MjgyNX0.-d8iWlfkbkXxPdpP-DSrV5oozVhuCp0tKPlA1bgq0OA';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+const CP={esposa:'sua esposa',marido:'seu marido',namorada:'sua namorada',namorado:'seu namorado',noiva:'sua noiva',noivo:'seu noivo',filho:'seu filho',filha:'sua filha',filhos:'seus filhos',filhas:'suas filhas',companheira:'sua companheira',companheiro:'seu companheiro',acompanhante:'seu acompanhante',mae:'sua mãe',pai:'seu pai'};
+const tok=(new URLSearchParams(location.search).get('c')||'').trim().toLowerCase();
+let D=null,busy=false;
+async function rpc(fn,args){const r=await fetch(API+fn,{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+ANON,'Content-Type':'application/json'},body:JSON.stringify(args)});
+ const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(_){}if(!r.ok){const e=new Error((j&&j.message)||'erro');e.code=(j&&j.message)||'';throw e}return j}
+function weekday(d){const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(d||'');if(!m)return'';const dt=new Date(+m[3],+m[2]-1,+m[1]);return['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'][dt.getDay()]}
+function draw(){
+ const comp=(D.comp||[]).map(w=>CP[norm(w)]||w),many=comp.length>0;
+ document.title=`Convite para ${D.nome} · ${D.title||'Aniversário Guilherme Rocha'}`;
+ $('#ttl').textContent=D.title||'Aniversário Guilherme Rocha';
+ $('#hi').textContent=`Oi, ${D.nome}!`;
+ $('#lead').textContent=many?`Este convite é para você e ${comp.length>1?comp.slice(0,-1).join(', ')+' e '+comp[comp.length-1]:comp[0]}. O Guilherme faz questão da presença de vocês.`:'O Guilherme faz questão da sua presença.';
+ const f=[];
+ if(D.date)f.push(['Quando',esc(D.date)+(weekday(D.date)?`, ${weekday(D.date)}`:'')+(D.hora?`, às ${esc(D.hora)}`:'')]);
+ if(D.local||D.endereco){const map=D.endereco?`<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(D.endereco)}" target="_blank" rel="noopener">${esc(D.endereco)}</a>`:'';f.push(['Onde',esc(D.local||'')+map])}
+ if(!D.hora||!D.local)f.push(['Detalhes','Horário e local serão confirmados em breve.']);
+ $('#facts').innerHTML=f.map(([k,v])=>`<li><b>${k}</b><span>${v}</span></li>`).join('');
+ const opts=many?[['todos',comp.length>1?'Confirmo: vamos todos':'Confirmo: vamos nós dois','yes'],['so_eu','Vou só eu',''],['nao','Não vou poder ir','']]:[['todos','Confirmo presença','yes'],['nao','Não vou poder ir','']];
+ $('#btns').innerHTML=opts.map(([v,l,c])=>`<button type="button" class="${c}" data-a="${v}">${l}</button>`).join('');
+ showAnswer()}
+function showAnswer(edit){
+ const r=D.rsvp,ask=$('#ask'),done=$('#done'),chg=$('#chg');
+ if(!r||edit){ask.hidden=false;done.hidden=true;chg.hidden=true;return}
+ ask.hidden=true;done.hidden=false;chg.hidden=false;done.classList.toggle('no',r==='nao');
+ done.textContent=r==='nao'?'Resposta registrada: você não vai poder ir. Obrigado por avisar.':r==='so_eu'?'Presença confirmada só para você. Até lá!':(D.comp||[]).length?'Presença confirmada para vocês. Até lá!':'Presença confirmada. Até lá!'}
+$('#btns').addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b||busy)return;busy=true;$('#err').textContent='';
+ document.querySelectorAll('#btns button').forEach(x=>x.disabled=true);b.textContent='Enviando…';
+ try{await rpc('aniv_rsvp',{p_tok:tok,p_ans:b.dataset.a});D.rsvp=b.dataset.a;draw()}
+ catch(err){$('#err').textContent='Não consegui registrar agora. Confira a internet e tente de novo.';draw();showAnswer(true)}finally{busy=false}});
+$('#chg').addEventListener('click',()=>showAnswer(true));
+(async()=>{
+ if(!/^[0-9a-f]{16}$/.test(tok)){$('#load').textContent='Este link de convite não está completo. Peça um novo a quem te enviou.';return}
+ try{D=await rpc('aniv_invite',{p_tok:tok});$('#load').hidden=true;$('#card').hidden=false;draw()}
+ catch(err){$('#load').textContent=err.code==='convite_invalido'?'Este convite não foi encontrado. Peça um novo a quem te enviou.':'Não consegui abrir o convite agora. Confira a internet e tente de novo.'}
+})();
+}
+</script>
+</body></html>

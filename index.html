@@ -83,6 +83,15 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:
 .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:4px}
 .acts .del{margin-right:auto;border-color:#b42318;color:light-dark(#b42318,#ff8a80)}
 .acts .del.armed{background:#b42318;color:#fff}
+.prev{white-space:pre-wrap;background:var(--card);border:1.5px dashed var(--line);border-radius:12px;padding:12px;font-size:15px;line-height:1.45;margin:0}
+.inv{display:grid;gap:10px;border-top:1.5px solid var(--line);padding-top:12px}
+.inv h3{margin:0;font:700 19px/1.2 Fraunces,Georgia,serif}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
+.btn.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+.dlg textarea.sm{min-height:96px;font-family:inherit;font-size:16px}
+.hint{margin:0;font-size:14px;color:var(--muted)}
+.bar select{min-height:44px;font-size:16px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px}
 .log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .log li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center}
 .log li.nv{background:var(--new)}
@@ -124,9 +133,11 @@ h1{font:700 clamp(30px,5vw,48px)/1.05 Fraunces,Georgia,serif;margin:0;text-wrap:
 </div></header>
 <div class="bar">
  <input id="q" type="search" placeholder="Buscar convidado" aria-label="Buscar convidado" autocomplete="off">
+ <select id="fl" aria-label="Mostrar"><option value="">Mostrar todos</option><option value="nophone">Sem WhatsApp</option><option value="notsent">Convite não enviado</option><option value="waiting">Enviado, sem resposta</option><option value="yes">Confirmados</option><option value="no">Não vão</option></select>
  <button id="bLog" type="button">Alterações</button>
  <button id="bNew" type="button">Novo bloco</button>
  <button id="bSel" type="button">Selecionar vários</button>
+ <button id="bExp" type="button">Exportar confirmados</button>
  <button id="bCopy" type="button">Copiar para planilha</button>
  <span id="note" class="note" role="status"></span>
 </div>
@@ -148,6 +159,24 @@ const store={get(k){try{return localStorage.getItem(k)}catch(_){return null}},se
 let KEY=null,S=null,dragId=null,pending=false,writes=0,logFilter='all';
 const ui={q:'',sel:false,picked:new Set()};
 const ppl=g=>1+((g.comp||[]).length);
+const conf=g=>g.st!=='s'?0:(g.rsvp==='so_eu'?1:ppl(g));
+const BASE=location.origin+location.pathname.replace(/[^/]*$/,'');
+const invLink=g=>g.tok?BASE+'convite.html?c='+g.tok:'';
+const CP={esposa:'sua esposa',marido:'seu marido',namorada:'sua namorada',namorado:'seu namorado',noiva:'sua noiva',noivo:'seu noivo',filho:'seu filho',filha:'sua filha',filhos:'seus filhos',filhas:'suas filhas',companheira:'sua companheira',companheiro:'seu companheiro',acompanhante:'seu acompanhante',mae:'sua mãe',pai:'seu pai'};
+const compPhrase=w=>CP[norm(w).trim()]||w;
+const convidados=g=>{const c=(g.comp||[]).map(compPhrase);if(!c.length)return'você';return'você e '+(c.length>1?c.slice(0,-1).join(', ')+' e '+c[c.length-1]:c[0])};
+const callOf=g=>(g.call||'').trim()||String(g.name||'').split(' ')[0];
+const DEFTPL='Oi, {nome}! Tudo bem?\n\nO Guilherme Rocha vai comemorar o aniversário e faz questão de ter {convidados} com ele.\n\n📅 {data} às {hora}\n📍 {local}\n\nO convite é pessoal. Confirme a presença por aqui: {link}';
+function inviteText(g){
+ const m=S.meta||{},v={nome:callOf(g),convidados:convidados(g),data:m.date||'',hora:m.hora||'',local:m.local||'',endereco:m.endereco||'',link:invLink(g)};
+ const tpl=(g.msg||'').trim()||m.tpl||DEFTPL;
+ return tpl.split('\n').map(line=>{
+  let l=line.replace(/\s*(às|,|-|–)?\s*\{(\w+)\}/g,(all,sep,k)=>k in v?(v[k]?all.replace('{'+k+'}',v[k]):''):all);
+  if(/\{\w+\}/.test(line)&&!/[\p{L}\p{N}]/u.test(l.replace(/[📅📍🕗⏰]/gu,'')))return null;return l}).filter(l=>l!==null).join('\n').replace(/\n{3,}/g,'\n\n').trim()}
+const waUrl=(g,t)=>'https://wa.me/'+(g.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(t);
+function flags(g){const f=[];if(!g.phone)f.push('nophone');if(!g.inv_at)f.push('notsent');if(g.inv_at&&!g.rsvp&&g.st==='c')f.push('waiting');if(g.st==='s')f.push('yes');if(g.st==='n')f.push('no');return f.join(' ')}
+function stLine(g){const p=[];if(g.rsvp==='todos')p.push(g.comp&&g.comp.length?'Confirmou pelo link, com '+g.comp.map(compPhrase).join(' e ').replace(/^(sua|seu|suas|seus) /,'').toLowerCase():'Confirmou pelo link');
+ else if(g.rsvp==='so_eu')p.push('Confirmou pelo link, sem acompanhante');else if(g.rsvp==='nao')p.push('Respondeu que não vai');else if(g.inv_at)p.push('Convite enviado');return p.join(' · ')}
 const byOrd=(a,b)=>((a.ord??0)-(b.ord??0))||String(a.id).localeCompare(String(b.id));
 const isOwner=()=>S&&S.me&&S.me.role==='owner';
 const newId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -178,24 +207,25 @@ function grouped(){const bs=blockList(),ids=new Set(bs.map(b=>b.id)),by={};bs.fo
 function groups(){const m=new Map();for(const l of S.log||[]){if(!m.has(l.grp))m.set(l.grp,[]);m.get(l.grp).push(l)}return[...m.values()]}
 function unseen(){if(!isOwner())return[];const seen=Date.parse(S.meta.owner_seen_at||0)||0;return groups().filter(es=>es[0].who!==S.me.who&&es[0].action!=='desfez'&&Date.parse(es[0].at)>seen&&!es.every(x=>x.undone_at))}
 function card(g,nv){
- const comp=(g.comp||[]).length?` <em>+ ${esc(g.comp.join(', ').toLowerCase())}</em>`:'';
- return `<div class="g st-${esc(g.st||'c')}${ui.picked.has(g.id)?' pk':''}${nv.has(g.id)?' nv':''}" draggable="${!ui.sel}" data-id="${esc(g.id)}" data-s="${esc(norm([g.name,...(g.comp||[]),g.note].join(' ')))}" tabindex="0" role="button" aria-label="${esc(g.name)}, ${esc(ST[g.st]||ST.c)}"><i class="dot" title="${esc(ST[g.st]||ST.c)}"></i><span class="nm"><span>${esc(g.name)}</span>${comp}${g.note?`<small>${esc(g.note)}</small>`:''}${nv.has(g.id)?'<small>Alterado pelo Guilherme</small>':''}</span><span class="no">${g.n?esc(g.n):''}</span></div>`}
+ const comp=(g.comp||[]).length?` <em>+ ${esc(g.comp.join(', ').toLowerCase())}</em>`:'';const sl=stLine(g);
+ return `<div class="g st-${esc(g.st||'c')}${ui.picked.has(g.id)?' pk':''}${nv.has(g.id)?' nv':''}" draggable="${!ui.sel}" data-id="${esc(g.id)}" data-f="${flags(g)}" data-s="${esc(norm([g.name,g.call,...(g.comp||[]),g.note].join(' ')))}" tabindex="0" role="button" aria-label="${esc(g.name)}, ${esc(ST[g.st]||ST.c)}"><i class="dot" title="${esc(ST[g.st]||ST.c)}"></i><span class="nm"><span>${esc(g.name)}</span>${comp}${g.note?`<small>${esc(g.note)}</small>`:''}${sl?`<small>${esc(sl)}</small>`:''}${nv.has(g.id)?`<small>Alterado por ${esc(nv.get(g.id))}</small>`:''}</span><span class="no">${g.n?esc(g.n):''}</span></div>`}
 function render(){
  if(!S)return;if(dragId){pending=true;return}
  const sx=board.scrollLeft,tops={};board.querySelectorAll('.list').forEach(l=>tops[l.dataset.b]=l.scrollTop);
- const {bs,by}=grouped(),uns=unseen(),nv=new Set();uns.forEach(es=>es.forEach(x=>{if(x.entity==='guest')nv.add(x.entity_id)}));
+ const {bs,by}=grouped(),uns=unseen(),nv=new Map();uns.slice().reverse().forEach(es=>es.forEach(x=>{if(x.entity==='guest')nv.set(x.entity_id,x.who)}));
  const sum=f=>S.guests.filter(f).reduce((a,g)=>a+ppl(g),0);
  $('#hello').textContent=`Lista de convidados · ${S.me.who}`;
  $('#t').textContent=S.meta.title||'Aniversário';
  $('#dt').textContent=S.meta.date?S.meta.date+' · editar':'Definir data';
  $('#sTot').textContent=sum(()=>true);
- $('#sMore').innerHTML=`<li><b>${S.guests.length}</b>convites</li><li><b>${sum(g=>g.st==='s')}</b>confirmadas</li><li><b>${sum(g=>g.st==='n')}</b>não vão</li><li><b>${bs.length}</b>blocos</li>`;
+ const nconf=S.guests.reduce((a,g)=>a+conf(g),0),sent=S.guests.filter(g=>g.inv_at).length;
+ $('#sMore').innerHTML=`<li><b>${S.guests.length}</b>convites</li><li><b>${sent}</b>enviados</li><li><b>${nconf}</b>confirmadas</li><li><b>${sum(g=>g.st==='n')}</b>não vão</li>`;
  $('#bLog').innerHTML='Alterações'+(uns.length?`<span class="badge">${uns.length} nova${uns.length>1?'s':''}</span>`:'');
  board.innerHTML=bs.map(b=>{const gs=by[b.id],p=gs.reduce((a,g)=>a+ppl(g),0);
   return `<section class="col" data-b="${esc(b.id)}"><button class="ch" type="button" data-act="block" data-b="${esc(b.id)}"><span class="cn">${esc(b.name)}</span><span class="cc">${p} ${p===1?'pessoa':'pessoas'}</span></button>${b.note?`<p class="bn">${esc(b.note)}</p>`:''}<div class="list" data-b="${esc(b.id)}">${gs.map(g=>card(g,nv)).join('')||'<p class="empty">Nenhum convidado aqui</p>'}</div><button class="add" type="button" data-act="add" data-b="${esc(b.id)}">+ Adicionar convidado</button></section>`}).join('');
  board.scrollLeft=sx;board.querySelectorAll('.list').forEach(l=>{if(tops[l.dataset.b])l.scrollTop=tops[l.dataset.b]});
  filter();renderSel()}
-function filter(){const q=norm(ui.q.trim());board.querySelectorAll('.g').forEach(c=>c.hidden=!!q&&!c.dataset.s.includes(q))}
+function filter(){const q=norm(ui.q.trim()),fl=ui.fl||'';board.querySelectorAll('.g').forEach(c=>c.hidden=(!!q&&!c.dataset.s.includes(q))||(!!fl&&!c.dataset.f.split(' ').includes(fl)))}
 function renderSel(){
  if(!ui.sel){vis(selbar,false);return}
  const ids=[...ui.picked],p=S.guests.filter(g=>ui.picked.has(g.id)).reduce((a,g)=>a+ppl(g),0);
@@ -229,25 +259,43 @@ const blockOpts=sel=>blockList().map(b=>`<option value="${esc(b.id)}"${b.id===se
 function armDel(btn,fn){btn.addEventListener('click',()=>{if(btn.classList.contains('armed')){fn();close()}else{btn.classList.add('armed');btn.textContent='Confirmar exclusão'}})}
 
 function openGuest(id,bid){
- const g=id?S.guests.find(x=>x.id===id):{name:'',comp:[],b:bid||'sem',st:'c',note:''};if(!g)return;
- const hist=id?(S.log||[]).filter(l=>l.entity==='guest'&&l.entity_id===id).slice(0,3):[];
+ const g=id?S.guests.find(x=>x.id===id):{name:'',comp:[],b:bid||'sem',st:'c',note:'',call:'',phone:'',msg:''};if(!g)return;
+ const hist=id?(S.log||[]).filter(l=>l.entity==='guest'&&l.entity_id===id).slice(0,1):[];
+ const resp={todos:'confirmou pelo link'+((g.comp||[]).length?' (com acompanhante)':''),so_eu:'confirmou pelo link, sem acompanhante',nao:'respondeu que não vai'}[g.rsvp]||'';
  open(`<h2>${id?'Editar convidado':'Novo convidado'}</h2>
- <label>Nome<input name="nm" value="${esc(g.name)}" required></label>
+ <label>Nome na lista<input name="nm" value="${esc(g.name)}" required></label>
  <label>Acompanhantes <small>separe por vírgula, ex.: Esposa, Filho</small><input name="cp" value="${esc((g.comp||[]).join(', '))}"></label>
  <label>Bloco<select name="bl">${blockOpts(g.b)}</select></label>
  <label>Situação<select name="stt">${Object.entries(ST).map(([k,v])=>`<option value="${k}"${(g.st||'c')===k?' selected':''}>${v}</option>`).join('')}</select></label>
  <label>Observação<input name="nt" value="${esc(g.note||'')}"></label>
- ${g.n?`<p class="bn" style="margin:0">Número na lista original: ${esc(g.n)}</p>`:''}
- ${hist.length?`<p class="bn" style="margin:0">Última alteração: ${esc(hist[0].who)}, ${esc(when(hist[0].at))}</p>`:''}
+ ${g.n?`<p class="hint">Número na lista original: ${esc(g.n)}</p>`:''}
+ ${hist.length?`<p class="hint">Última alteração: ${esc(hist[0].who)}, ${esc(when(hist[0].at))}</p>`:''}
+ <div class="inv"><h3>Convite</h3>
+  <label>Como chamar no convite <small>ex.: Léo, Dona Hermelinda</small><input name="cl" value="${esc(g.call||callOf(g))}"></label>
+  <label>WhatsApp <small>com DDD; com o número, o envio abre direto a conversa</small><input name="ph" inputmode="tel" value="${esc(g.phone||'')}" placeholder="81 99999-9999"></label>
+  <label>Mensagem própria <small>opcional; vazio usa o modelo da festa</small><textarea name="ms" class="sm" placeholder="Deixe vazio para usar o modelo">${esc(g.msg||'')}</textarea></label>
+  <p class="prev" id="pv"></p>
+  ${id?`<div class="row"><a class="btn wa" id="sWa" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>${navigator.share?'<button type="button" class="btn" id="sSh">Outro app</button>':''}<button type="button" class="btn" id="sCp">Copiar texto</button></div>
+  <p class="hint" id="sSt">${g.inv_at?'Convite enviado em '+esc(when(g.inv_at)):'Convite ainda não enviado.'}${resp?' Resposta: '+esc(resp)+(g.rsvp_at?', '+esc(when(g.rsvp_at)):'')+'.':''}</p>`:'<p class="hint">Salve o convidado para poder enviar o convite.</p>'}
+ </div>
  <div class="acts">${id?'<button type="button" class="btn del">Excluir</button>':''}<button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
   const E=f.elements,del=f.querySelector('.del');
+  const normPhone=v=>{let d=String(v||'').replace(/\D/g,'');if(d.startsWith('0'))d=d.replace(/^0+/,'');if(d.length===10||d.length===11)d='55'+d;return d};
+  const cur=()=>({...g,name:E.nm.value.trim()||g.name,comp:E.cp.value.split(',').map(x=>x.trim()).filter(Boolean),call:E.cl.value.trim(),phone:normPhone(E.ph.value),msg:E.ms.value});
+  const upd=()=>{const c=cur(),t=inviteText(c);f.querySelector('#pv').textContent=t;const wa=f.querySelector('#sWa');if(wa)wa.href=waUrl(c,t)};
+  ['nm','cp','cl','ph','ms'].forEach(n=>E[n].addEventListener('input',upd));upd();
+  const data=()=>({name:E.nm.value.trim(),comp:E.cp.value.split(',').map(x=>x.trim()).filter(Boolean),st:E.stt.value,note:E.nt.value.trim(),b:E.bl.value,call:E.cl.value.trim(),phone:normPhone(E.ph.value),msg:E.ms.value.trim()});
+  const changed=d=>['name','st','note','b','call','phone','msg'].some(k=>(d[k]||'')!==(g[k]||''))||JSON.stringify(d.comp)!==JSON.stringify(g.comp||[]);
+  const persist=()=>{const d=data();if(!d.name)return false;if(id&&changed(d)){if(d.b!==g.b){const {by}=grouped(),l=by[d.b]||[];g.ord=(l.length?l[l.length-1].ord:0)+1000}Object.assign(g,d);apply('guest_save',{id,...d})}return true};
+  const markSent=how=>{persist();g.inv_at=new Date().toISOString();apply('guest_invited',{id});const st=f.querySelector('#sSt');if(st)st.textContent='Convite marcado como enviado agora ('+how+').';render()};
+  const wa=f.querySelector('#sWa');if(wa)wa.addEventListener('click',()=>markSent('WhatsApp'));
+  const sh=f.querySelector('#sSh');if(sh)sh.addEventListener('click',async()=>{try{await navigator.share({text:inviteText(cur())});markSent('compartilhado')}catch(_){}});
+  const cp=f.querySelector('#sCp');if(cp)cp.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(inviteText(cur()));cp.textContent='Copiado';markSent('texto copiado')}catch(_){cp.textContent='Não foi possível copiar'}});
   if(del)armDel(del,()=>{S.guests=S.guests.filter(x=>x.id!==id);ui.picked.delete(id);apply('guest_delete',{id});render()});
-  f.addEventListener('submit',()=>{const name=E.nm.value.trim();if(!name){E.nm.focus();return}
-   const data={name,comp:E.cp.value.split(',').map(s=>s.trim()).filter(Boolean),st:E.stt.value,note:E.nt.value.trim(),b:E.bl.value};close();
-   const gid=id||newId('g');
-   if(id){if(data.b!==g.b){const {by}=grouped(),l=by[data.b]||[];g.ord=(l.length?l[l.length-1].ord:0)+1000}Object.assign(g,data)}
-   else{const {by}=grouped(),l=by[data.b]||[];S.guests.push({id:gid,n:'',ord:(l.length?l[l.length-1].ord:0)+1000,...data})}
-   apply('guest_save',{id:gid,...data});render()})})}
+  f.addEventListener('submit',()=>{const d=data();if(!d.name){E.nm.focus();return}close();
+   if(id){persist()}
+   else{const gid=newId('g'),{by}=grouped(),l=by[d.b]||[];S.guests.push({id:gid,n:'',ord:(l.length?l[l.length-1].ord:0)+1000,...d});apply('guest_save',{id:gid,...d})}
+   render()})})}
 
 function openBlock(bid){
  const bs=blockList(),i=bs.findIndex(b=>b.id===bid),b=bid?bs[i]:{name:'',note:''};
@@ -267,8 +315,22 @@ function openBlock(bid){
    render()})})}
 
 function openMeta(){
- open(`<h2>Dados da festa</h2><label>Título<input name="ttl" value="${esc(S.meta.title||'')}"></label><label>Data<input name="dte" value="${esc(S.meta.date||'')}" placeholder="dd/mm/aaaa"></label><div class="acts"><button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
-  f.addEventListener('submit',()=>{const title=f.elements.ttl.value.trim()||'Aniversário',date=f.elements.dte.value.trim();S.meta.title=title;S.meta.date=date;close();apply('meta_save',{title,date});render()})})}
+ const m=S.meta;
+ open(`<h2>Dados da festa</h2>
+ <label>Título<input name="ttl" value="${esc(m.title||'')}"></label>
+ <label>Data<input name="dte" value="${esc(m.date||'')}" placeholder="dd/mm/aaaa"></label>
+ <label>Horário<input name="hr" value="${esc(m.hora||'')}" placeholder="ex.: 20h"></label>
+ <label>Local<input name="lc" value="${esc(m.local||'')}" placeholder="nome do lugar"></label>
+ <label>Endereço <small>vira o link do mapa no convite</small><input name="en" value="${esc(m.endereco||'')}"></label>
+ <label>Modelo do convite <small>use {nome}, {convidados}, {data}, {hora}, {local}, {endereco} e {link}; linha com campo vazio some sozinha</small><textarea name="tp">${esc(m.tpl||DEFTPL)}</textarea></label>
+ <button type="button" class="btn" id="rst" style="justify-self:start">Voltar ao modelo padrão</button>
+ <p class="hint">Exemplo com um convidado:</p><p class="prev" id="pv"></p>
+ <div class="acts"><button type="button" class="btn" data-x>Cancelar</button><button type="submit" class="btn pri">Salvar</button></div>`,f=>{
+  const E=f.elements,ex=S.guests.find(g=>(g.comp||[]).length)||S.guests[0]||{name:'Convidado',comp:[]};
+  const upd=()=>{const keep=S.meta;S.meta={...keep,date:E.dte.value,hora:E.hr.value,local:E.lc.value,endereco:E.en.value,tpl:E.tp.value};f.querySelector('#pv').textContent=inviteText({...ex,msg:''});S.meta=keep};
+  ['dte','hr','lc','en','tp'].forEach(n=>E[n].addEventListener('input',upd));upd();
+  f.querySelector('#rst').addEventListener('click',()=>{E.tp.value=DEFTPL;upd()});
+  f.addEventListener('submit',()=>{const d={title:E.ttl.value.trim()||'Aniversário',date:E.dte.value.trim(),hora:E.hr.value.trim(),local:E.lc.value.trim(),endereco:E.en.value.trim(),tpl:E.tp.value};Object.assign(S.meta,d);close();apply('meta_save',d);render()})},true)}
 
 /* ---------- histórico ---------- */
 const fmt=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -278,10 +340,12 @@ function bname(id,es){if(id==='sem')return'Sem bloco';const b=(S.blocks||[]).fin
 function names(es){const ns=es.slice().reverse().filter(x=>x.entity==='guest').map(x=>(x.after||x.before||{}).name).filter(Boolean);const u=[...new Set(ns)];return u.length>4?u.slice(0,4).join(', ')+` e mais ${u.length-4}`:u.join(', ')}
 function describe(es){
  const e=es[0],a=e.action;
+ if(a==='respondeu'){const r=e.after.rsvp;return r==='nao'?'respondeu pelo convite que não vai':r==='so_eu'?'confirmou presença pelo convite, sem acompanhante':'confirmou presença pelo convite'+((e.after.comp||[]).length?' (com acompanhante)':'')}
+ if(a==='convidou')return`enviou o convite para ${names(es)}`;
  if(a==='desfez')return'desfez uma alteração'+(names(es)?' em '+names(es):'');
  const bd=es.find(x=>x.entity==='block'&&x.action==='excluiu');
  if(bd){const n=es.filter(x=>x.entity==='guest').length;return`excluiu o bloco “${bd.before.name}”`+(n?` (${n} convite${n>1?'s':''} voltou${n>1?'ram':''} para Sem bloco)`:'')}
- if(e.entity==='meta')return`alterou os dados da festa para “${e.after.title}”${e.after.date?' · '+e.after.date:''}`;
+ if(e.entity==='meta'){const b=e.before||{},f=e.after||{},p=[];if(b.title!==f.title)p.push(`o título para “${f.title}”`);if(b.date!==f.date)p.push(`a data para ${f.date}`);if(b.hora!==f.hora)p.push(`o horário para ${f.hora||'vazio'}`);if(b.local!==f.local)p.push(`o local para ${f.local||'vazio'}`);if(b.endereco!==f.endereco)p.push('o endereço');if(b.tpl!==f.tpl)p.push('o modelo do convite');return'alterou '+(p.join(', ')||'os dados da festa')}
  if(e.entity==='block'){
   if(a==='criou')return`criou o bloco “${e.after.name}”`;
   if(a==='reordenou')return'mudou a ordem dos blocos';
@@ -296,16 +360,19 @@ function describe(es){
   if(JSON.stringify(b.comp)!==JSON.stringify(f.comp))p.push(`mudou os acompanhantes de ${f.name} para ${f.comp.length?f.comp.join(', ').toLowerCase():'nenhum'}`);
   if(b.b!==f.b)p.push(`moveu ${f.name} para ${bname(f.b)}`);
   if(b.note!==f.note)p.push(`mudou a observação de ${f.name}`+(f.note?`: “${f.note}”`:''));
+  if((b.call||'')!==(f.call||''))p.push(`passou a chamar ${f.name} de “${f.call}” no convite`);
+  if((b.phone||'')!==(f.phone||''))p.push(f.phone?`atualizou o WhatsApp de ${f.name}`:`apagou o WhatsApp de ${f.name}`);
+  if((b.msg||'')!==(f.msg||''))p.push(f.msg?`personalizou a mensagem de ${f.name}`:`voltou ${f.name} ao modelo padrão`);
   return p.join('; ')||`editou ${f.name}`}
  return a}
 function openLog(){
  const uns=new Set(unseen().map(es=>es[0].grp));
- const draw=f=>{const gs=groups().filter(es=>logFilter==='all'||(logFilter==='other'?es[0].who!==S.me.who:uns.has(es[0].grp)));
+ const draw=f=>{const gs=groups().filter(es=>logFilter==='all'||(logFilter==='other'?(es[0].role!=='convidado'&&es[0].who!==S.me.who):logFilter==='resp'?es[0].role==='convidado':uns.has(es[0].grp)));
   f.querySelector('.log').innerHTML=gs.length?gs.map(es=>{const e=es[0],done=es.every(x=>x.undone_at)&&e.action!=='desfez';
    const canUndo=isOwner()&&e.action!=='desfez'&&!done;
-   return `<li class="${uns.has(e.grp)?'nv':''}${done?' undone':''}"><span class="what"><span class="who">${esc(e.who)}</span> ${esc(describe(es))}</span><span class="when">${esc(when(e.at))}</span>${done?`<span class="tag">Desfeito por ${esc(es[0].undone_by||'Carlos')}</span>`:''}${canUndo?`<button type="button" class="undo" data-g="${esc(e.grp)}">Desfazer</button>`:''}</li>`}).join(''):'<li><span class="what">Nenhuma alteração por aqui.</span></li>'};
+   return `<li class="${uns.has(e.grp)?'nv':''}${done?' undone':''}"><span class="what"><span class="who">${esc(e.who)}</span>${e.role==='convidado'?' (convidado)':''} ${esc(describe(es))}</span><span class="when">${esc(when(e.at))}</span>${done?`<span class="tag">Desfeito por ${esc(es[0].undone_by||'Carlos')}</span>`:''}${canUndo?`<button type="button" class="undo" data-g="${esc(e.grp)}">Desfazer</button>`:''}</li>`}).join(''):'<li><span class="what">Nenhuma alteração por aqui.</span></li>'};
  const other=S.me.role==='owner'?'Só do Guilherme':'Só do Carlos';
- open(`<h2>Alterações</h2><div class="filt"><button type="button" data-f="all">Todas</button><button type="button" data-f="other">${other}</button>${isOwner()?'<button type="button" data-f="new">Novas</button>':''}</div><ul class="log"></ul><div class="acts"><button type="button" class="btn pri" data-x>Fechar</button></div>`,f=>{
+ open(`<h2>Alterações</h2><div class="filt"><button type="button" data-f="all">Todas</button><button type="button" data-f="other">${other}</button><button type="button" data-f="resp">Respostas</button>${isOwner()?'<button type="button" data-f="new">Novas</button>':''}</div><ul class="log"></ul><div class="acts"><button type="button" class="btn pri" data-x>Fechar</button></div>`,f=>{
   const mark=()=>f.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('on',b.dataset.f===logFilter));
   if(logFilter==='new'&&!isOwner())logFilter='all';mark();draw(f);
   f.querySelector('.filt').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;logFilter=b.dataset.f;mark();draw(f)});
@@ -315,6 +382,30 @@ function openLog(){
    try{await chain;await rpc('aniv_undo',{p_key:KEY,p_grp:b.dataset.g});await load();say('Alteração desfeita.');draw(f)}catch(err){b.textContent='Falhou';say('Não foi possível desfazer: '+err.message)}})},true);
  if(isOwner()&&uns.size){rpc('aniv_seen',{p_key:KEY}).then(()=>{S.meta.owner_seen_at=new Date().toISOString();render()}).catch(()=>{})}}
 
+function loadXLSX(){return window.XLSX?Promise.resolve(window.XLSX):new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';sc.onload=()=>ok(window.XLSX);sc.onerror=()=>no(new Error('Não foi possível carregar o gerador de planilha.'));document.head.appendChild(sc)})}
+const RESP={todos:'Vamos todos',so_eu:'Vou só eu',nao:'Não vou'};
+const fmtPhone=n=>{n=String(n||'');if(n.startsWith('55')&&(n.length===12||n.length===13)){const r=n.slice(4);return`+55 ${n.slice(2,4)} ${r.slice(0,-4)}-${r.slice(-4)}`}return n?'+'+n:''};
+async function exportXlsx(){
+ const btn=$('#bExp'),lbl=btn.textContent;btn.disabled=true;btn.textContent='Gerando…';
+ try{const X=await loadXLSX(),{bs,by}=grouped(),bn={};bs.forEach(b=>bn[b.id]=b.name);
+  const all=[];bs.forEach(b=>by[b.id].forEach(g=>all.push(g)));
+  const yes=all.filter(g=>g.st==='s');
+  const a1=[['Convidado','Como chamar','Acompanhantes','Resposta','Pessoas confirmadas','Como confirmou','Bloco','WhatsApp','Respondido em']];
+  yes.forEach(g=>a1.push([g.name,callOf(g),(g.comp||[]).join(', '),g.rsvp?RESP[g.rsvp]:'Marcado no app',conf(g),g.rsvp?'Pelo link':'Marcado no app',bn[g.b]||'Sem bloco',fmtPhone(g.phone),g.rsvp_at?when(g.rsvp_at):'']));
+  a1.push([]);a1.push(['Total',`${yes.length} convites`,'','',yes.reduce((a,g)=>a+conf(g),0),'','','','']);
+  const a2=[['Bloco','Nº original','Convidado','Acompanhantes','Pessoas','Situação','Convite enviado em','Resposta pelo link','Respondido em','WhatsApp','Observação']];
+  all.forEach(g=>a2.push([bn[g.b]||'Sem bloco',g.n||'',g.name,(g.comp||[]).join(', '),ppl(g),ST[g.st]||ST.c,g.inv_at?when(g.inv_at):'',g.rsvp?RESP[g.rsvp]:'',g.rsvp_at?when(g.rsvp_at):'',fmtPhone(g.phone),g.note||'']));
+  const wb=X.utils.book_new(),s1=X.utils.aoa_to_sheet(a1),s2=X.utils.aoa_to_sheet(a2);
+  s1['!cols']=[28,16,20,18,12,16,22,20,16].map(w=>({wch:w}));s2['!cols']=[22,10,26,20,8,12,18,16,16,20,30].map(w=>({wch:w}));
+  X.utils.book_append_sheet(wb,s1,'Confirmados');X.utils.book_append_sheet(wb,s2,'Lista completa');
+  const d=new Date(),name=`Confirmados - Aniversario Guilherme Rocha - ${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}.xlsx`;
+  const out=X.write(wb,{bookType:'xlsx',type:'array'}),blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const file=new File([blob],name,{type:blob.type});
+  if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:name})}catch(_){}}
+  else{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+  say(`Planilha gerada: ${yes.length} convites confirmados, ${yes.reduce((a,g)=>a+conf(g),0)} pessoas.`)}
+ catch(err){say(err.message)}finally{btn.disabled=false;btn.textContent=lbl}}
+$('#bExp').addEventListener('click',exportXlsx);
 function tsv(){const {bs,by}=grouped();const rows=[['Bloco','Nº original','Convidado','Acompanhantes','Pessoas','Situação','Observação']];
  bs.forEach(b=>by[b.id].forEach(g=>rows.push([b.name,g.n||'',g.name,(g.comp||[]).join(', '),ppl(g),ST[g.st]||ST.c,g.note||''])));
  return rows.map(r=>r.map(v=>String(v).replace(/[\t\n]/g,' ')).join('\t')).join('\n')}
@@ -326,6 +417,7 @@ board.addEventListener('click',e=>{const a=e.target.closest('[data-act]');
  if(ui.sel){const id=c.dataset.id;ui.picked.has(id)?ui.picked.delete(id):ui.picked.add(id);c.classList.toggle('pk');renderSel()}else openGuest(c.dataset.id)});
 board.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('g')){e.preventDefault();e.target.click()}});
 $('#q').addEventListener('input',e=>{ui.q=e.target.value;filter()});
+$('#fl').addEventListener('change',e=>{ui.fl=e.target.value;filter()});
 $('#bNew').addEventListener('click',()=>openBlock(null));
 $('#bLog').addEventListener('click',()=>{if(!modal.innerHTML)openLog()});
 $('#dt').addEventListener('click',openMeta);
